@@ -10,9 +10,18 @@ const io = socketio(server);
 app.use(express.static(path.join(__dirname,'public')));
 
 io.on('connection', socket =>{
-    console.log ('New Ws Connection...');
- 
-     socket.emit('message','Welcome to chat');
+    // mensage al usuario coenctado
+    socket.emit('message','welcome to chat')
+
+    // mensage para todos los clientes exepto el que se esta conectando
+    socket.broadcast.emit('message','un usuario se ha conectado al chat')
+
+    socket.on('chatMessage',msg=>{
+        console.log(msg)
+
+        // mensage a todos los usuarios conrctados
+        io.emit('message',msg)
+    })
  });
 
 const PORT = 3000 || process.env.PORT;
