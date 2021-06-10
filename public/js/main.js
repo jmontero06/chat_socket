@@ -1,6 +1,8 @@
 const chatForm = document.getElementById('chat-form')
 // Constante que toma el estilo del elemento de mi document
 const chatMessage = document.querySelector('.chat-messages')
+const roomName = document.getElementById('room-name')
+const userList = document.getElementById('users')
 
 // Obteniendo username y room del URL
 const {username,room} = Qs.parse(location.search,{
@@ -11,6 +13,11 @@ const socket = io();
 
 //Unirse a la sala
 socket.emit('joinRoom', {username, room});
+
+socket.on('roomUser',({room,users})=>{
+  ouputRoomName(room)
+  outputMessage(users)
+})
 
 socket.on('message', message =>{
   //console.log(message);
@@ -44,4 +51,18 @@ function outputMessage(message){
   </p>`
 
   document.querySelector('.chat-messages').appendChild(div);
+}
+
+document.getElementById('leave-btn').addEventListener('click',()=>{
+  const leaveRoom=confirm('Are you sure you want to leave?')
+  if(leaveRoom){
+    window.location='../index.html'
+  }
+})
+
+function ouputRoomName(room){
+  roomName.innerHTML=room
+}
+function ouputUsers(users){
+  userList.innerHTML=`${users.map(user=>`<li>${user.username}</li>`)}`
 }
